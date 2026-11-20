@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kazan Kadro Simülasyonu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700;800&family=Red+Hat+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: çalışma aracı, net ve sakin; COO masasında karar için
+   IDEA: depo planlama panosu — sol tarafta ayar kolları, sağda ölçekli yerleşim ve canlı kadro
+   PICTURE: e-ticaret alanının ölçekli planı; hücre döngüsünde toplayıcılar, 16 istasyon, HP
+   COLOUR and TYPE: oxford mavisi bant, beyaz paneller, sonuçta magenta; Red Hat Display + Text
+   LAYOUT: üst bant + senaryo düğmeleri; iki sütun (ayarlar | plan+sonuç); altta tablolar */
+:root{color-scheme:light dark;
+--bg:light-dark(#eef1f6,#070f26);--panel:light-dark(#ffffff,#0f1d42);--ink:light-dark(#0b1f4b,#e6ebf7);
+--soft:light-dark(#4b5a78,#9fb0d6);--line:light-dark(#d5dbe7,#22336a);--band:#0b1f4b;--res:#e0115f;
+--ok:light-dark(#127a4b,#4fd18f);--warn:light-dark(#a35d00,#f2b24a);--bad:light-dark(#c2103f,#ff5c8a);
+--cell:light-dark(#dfe6f5,#1a2b5e);--rack:light-dark(#9fb0d6,#3b5296);--isl:light-dark(#c7d1e8,#2a3d78)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Red Hat Text",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Red Hat Display",system-ui,sans-serif;line-height:1.08;margin:0;text-wrap:balance}
+.top{background:var(--band);color:#fff;padding:clamp(22px,3vw,40px) max(4vw,16px) 20px}
+.top h1{font-size:clamp(28px,4vw,44px);font-weight:800}
+.top p{margin:8px 0 16px;color:#c9d4f0;max-width:80ch}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.presets button{font:600 15px "Red Hat Text";min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #3d5294;background:transparent;color:#fff;cursor:pointer}
+.presets button[aria-pressed=true]{background:#fff;color:var(--band);border-color:#fff}
+.presets button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--res);outline-offset:2px}
+.wrap{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;padding:20px max(4vw,16px);max-width:1400px;margin:0 auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.panel h2{font-size:19px;margin-bottom:10px}
+.grp{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.grp:first-of-type{border-top:0;margin-top:0;padding-top:0}
+label{display:grid;grid-template-columns:1fr 92px;align-items:center;gap:8px;font-size:14px;color:var(--soft);margin:6px 0}
+input[type=number],select{font:16px "Red Hat Text";width:100%;min-height:40px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);text-align:right}
+input[type=range]{width:100%;accent-color:var(--res)}
+.rate{font-size:14px;color:var(--soft)}
+.rate b{font:800 28px "Red Hat Display";color:var(--ink)}
+.chip{display:inline-block;font-size:13px;font-weight:600;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.c-ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+.c-warn{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.c-bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.hint{font-size:13px;color:var(--soft);margin:6px 0 0}
+.res{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font:800 clamp(28px,3.4vw,44px)/1 "Red Hat Display";white-space:nowrap}
+.kpi .v.hot{color:var(--res)}
+.kpi .l{font-size:13px;color:var(--soft);margin-top:6px}
+.fig{position:relative;height:clamp(300px,42vw,470px);background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:13px;color:var(--soft);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-top:20px}
+.opt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.opt .panel h3{font-size:17px;margin-bottom:6px}
+.opt .panel p{margin:4px 0;font-size:14px}
+.scroll{overflow-x:auto}
+footer{padding:4px max(4vw,16px) 30px;max-width:1400px;margin:0 auto;font-size:13px;color:var(--soft)}
+details summary{cursor:pointer;font-weight:600;color:var(--ink)}
+@media(max-width:980px){.wrap{grid-template-columns:minmax(0,1fr)}.wrap>aside{order:2}.two{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){.res{grid-template-columns:repeat(2,minmax(0,1fr))}.opt{grid-template-columns:minmax(0,1fr)}table{font-size:13px}}
+@media(prefers-reduced-motion:no-preference){.dot{transition:cx .4s,cy .4s,fill .3s}}
+</style>
+</head>
+<body>
+<header class="top">
+<h1>Kazan hat ve kadro simülasyonu</h1>
+<p>v8.15 tasarımı: 2 kare hücre, 18 gözlü araba, 16 paket istasyonu, hazır paket hattı ve VAS. Bir gün tipi seçin ya da ayarları değiştirin; kadro, kapasite sınırları ve plan anında güncellenir.</p>
+<div class="presets" id="presets">
+<button data-p="n26">2026 normal gün</button>
+<button data-p="p26" aria-pressed="true">2026 P95 günü</button>
+<button data-p="n27">2027 normal gün</button>
+<button data-p="p27">2027 P95 günü</button>
+<button data-p="max">Rekor gün (11.601)</button>
+</div>
+</header>
+
+<main class="wrap">
+<aside class="panel" aria-label="Ayarlar">
+<div class="grp"><h2>Hacim</h2>
+<label>Ortalama sipariş/gün<input type="number" id="ort" value="5291" step="1"></label>
+<label>Gün tipi çarpanı<input type="number" id="gf" value="1.6" step="0.01"></label>
+<label>Büyüme çarpanı<input type="number" id="gr" value="1" step="0.05"></label>
+<p class="hint">ikas 2026 Oca–Eki: ortalama 5.291, P95 = ×1,6, normal ay = ×0,84, rekor = ×2,19. 2027 e-ticaret ×1,5.</p></div>
+
+<div class="grp"><h2>Toplama hızı</h2>
+<div class="rate"><b id="rateV">120</b> satır/adam-saat <span id="rateChip" class="chip c-ok">model</span></div>
+<input type="range" id="rate" min="50" max="160" step="1" value="120" aria-label="Toplama hızı">
+<p class="hint">Pilot karar bantları: &lt;69 Senaryo 1 · 69–80 gri bölge · 80–120 hücre geçerli · ≥120 model.</p></div>
+
+<div class="grp"><h2>Verim ve kapasite</h2>
+<label>Hücre satırı / sipariş<input type="number" id="spo" value="1.762" step="0.01"></label>
+<label>Paketleme sipariş/adam-saat<input type="number" id="pk" value="71" step="1"></label>
+<label>Hazır paket sipariş/adam-saat<input type="number" id="hp" value="140" step="1"></label>
+<label>Net çalışma saati<input type="number" id="sa" value="7.5" step="0.25"></label>
+<label>Hücre sayısı<input type="number" id="hc" value="2" step="1" min="1"></label>
+<label>Hücre başı rahat kişi<input type="number" id="hmax" value="8" step="1"></label>
+<label>Paket istasyonu<input type="number" id="ist" value="16" step="1"></label></div>
+
+<div class="grp"><h2>Bordro</h2>
+<label>Devam oranı<select id="dv"><option value="1">%100</option><option value="0.9">%90</option><option value="0.85">%85</option><option value="0.73" selected>%73 (ölçülen)</option></select></label>
+<label>Mevcut e-ticaret bordrosu<input type="number" id="mb" value="32" step="1"></label>
+<label>Günlük en fazla FM (saat)<input type="number" id="fmd" value="2.5" step="0.25"></label>
+<label>Aylık FM sınırı/kişi (saat)<input type="number" id="fmm" value="22.5" step="0.5"></label>
+<p class="hint">22,5 saat/ay = İş Kanunu md. 41, yıllık 270 saat.</p></div>
+</aside>
+
+<section aria-label="Sonuç">
+<div class="res" id="kpis"></div>
+<div class="fig"><svg id="plan" role="img" aria-label="E-ticaret alanının ölçekli planı ve kadro yerleşimi"></svg></div>
+<p class="hint" id="planNote"></p>
+
+<div class="two">
+<div class="panel"><h2>Bölge bazında</h2><div class="scroll"><table id="zones"></table></div></div>
+<div class="panel"><h2>Devam ve fazla mesai</h2><div class="scroll"><table id="att"></table></div><p class="hint" id="fmNote"></p></div>
+</div>
+
+<div style="margin-top:20px"><h2 style="font-size:21px;margin-bottom:10px" id="optT">Sığmıyorsa seçenekler</h2><div class="opt" id="opts"></div></div>
+
+<div class="panel" style="margin-top:20px"><h2>VAS</h2>
+<div class="two" style="margin-top:6px">
+<div>
+<label>Toz 1 adet/ay<input type="number" id="t1" value="211200" step="100"></label>
+<label>Toz 2 adet/ay<input type="number" id="t2" value="105600" step="100"></label>
+<label>Vitamin adet/ay<input type="number" id="vt" value="245000" step="100"></label>
+<label>Toz 1 adet/adam-saat<input type="number" id="r1" value="133" step="1"></label>
+<label>Toz 2 adet/adam-saat<input type="number" id="r2" value="155" step="1"></label>
+<label>Vitamin adet/adam-saat<input type="number" id="r3" value="366" step="1"></label>
+<label>Çalışma günü/ay<input type="number" id="vg" value="24" step="1"></label>
+<label>Mevcut VAS bordrosu<input type="number" id="vb" value="10" step="1"></label>
+<p class="hint">Hacim ve verim eski simülasyondan (KPI v3.5). Güncel KPI v3.18 değerleriyle değiştirin. Vardiya 7,75 saat, hat 5 kişi, Kazan'da 4 hat + 2 yedek.</p>
+</div>
+<div id="vasOut"></div>
+</div></div>
+</section>
+</main>
+
+<footer>
+<details><summary>Model ve kaynaklar</summary>
+<p>Toplayıcı = sipariş × hücre satırı/sipariş ÷ (toplama hızı × saat). 1,762 satır/sipariş = 9.322 hücre satırı ÷ 5.291 sipariş (kit yükü dahil, v8.6). Paketleme 71 ve hazır paket 140 sipariş/adam-saat, v8.6 kadrosundan (P95: paketleme 16, HP 7,8) geri hesaplandı; iki değer de pilotta ölçülecek. Araba = sipariş × 0,0538 (WIP) ÷ (18 göz × %94) × 1,1. Hücre döngüsü 30,6 m; hücre başı rahat kişi varsayımı 8 (pilot V3). Plan v8.10 as-built koordinatlarından ölçekli çizildi (X 100–151,5 m, Y 48,6–71 m).</p>
+<p>Kaynak: Kazan devam notu v8.15, ikas 2026 veri temeli, Ostim pilot planı. Bu sürüm, 05.11'deki 4 hatlı simülasyonun yerine hücre tasarımına göre yeniden kuruldu.</p>
+</details>
+</footer>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const fmt=(x,d=0)=>Number(x).toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const P={n26:[0.84,1],p26:[1.6,1],n27:[0.84,1.5],p27:[1.6,1.5],max:[2.193,1]};
+const ids=['ort','gf','gr','rate','spo','pk','hp','sa','hc','hmax','ist','dv','mb','fmd','fmm','t1','t2','vt','r1','r2','r3','vg','vb'];
+const v=id=>parseFloat($(id).value)||0;
+const st=(c,t)=>`<span class="chip ${c}">${t}</span>`;
+
+function calc(){
+  const o=v('ort')*v('gf')*v('gr'), sa=v('sa'), hc=Math.max(1,Math.round(v('hc')));
+  const sat=o*v('spo'), top=sat/(v('rate')*sa), pak=o/(v('pk')*sa), hp=o/(v('hp')*sa);
+  const tot=top+pak+hp, hb=top/hc, araba=Math.ceil(o*0.0538/(18*0.94)*1.1);
+  return {o,sa,hc,sat,top,pak,hp,tot,hb,araba,mpp:30.6/Math.max(hb,0.01)};
+}
+
+function rateChip(r){
+  if(r<69) return ['c-bad','Senaryo 1'];
+  if(r<80) return ['c-warn','gri bölge'];
+  if(r<120) return ['c-ok','hücre geçerli'];
+  return ['c-ok','model'];
+}
+
+function render(){
+  const R=calc(), hmax=v('hmax'), ist=v('ist'), dv=v('dv'), mb=v('mb');
+  $('rateV').textContent=v('rate');
+  const [rc,rt]=rateChip(v('rate')); $('rateChip').className='chip '+rc; $('rateChip').textContent=rt;
+  const hbS=R.hb>hmax*1.25?'c-bad':R.hb>hmax?'c-warn':'c-ok';
+  const pkS=Math.ceil(R.pak)>ist?'c-bad':'c-ok';
+  const bord=Math.ceil(R.tot/dv);
+  $('kpis').innerHTML=[
+    [fmt(R.o),'sipariş/gün',''],
+    [fmt(R.tot,1),'sahada kişi (e-ticaret)','hot'],
+    [fmt(bord),`bordro gereken (devam %${fmt(dv*100)})`,''],
+    [fmt(R.araba),'araba (18 göz)','']
+  ].map(([a,b,c])=>`<div class="kpi"><div class="v ${c}">${a}</div><div class="l">${b}</div></div>`).join('');
+
+  $('zones').innerHTML=`<tr><th>Bölge</th><th class="n">Kişi</th><th class="n">Kapasite</th><th>Durum</th></tr>`+[
+    ['Hücre toplama (toplam)',R.top,`${fmt(R.sat)} satır`,''],
+    [`Hücre başı (${R.hc} hücre)`,R.hb,`${fmt(hmax)} kişi · ${fmt(R.mpp,1)} m/kişi`,st(hbS,hbS==='c-ok'?'rahat':hbS==='c-warn'?'sınırda':'sıkışma')],
+    ['Paketleme',R.pak,`${fmt(ist)} istasyon`,st(pkS,pkS==='c-ok'?'sığıyor':`${fmt(Math.ceil(R.pak)-ist)} istasyon eksik`)],
+    ['Hazır paket (hat + toplama + kit)',R.hp,'1 hat',st(R.hp>8?'c-warn':'c-ok',R.hp>8?'pilotla bak':'tamam')],
+    ['Toplam sahada',R.tot,'',''],
+  ].map(r=>`<tr><td>${r[0]}</td><td class="n">${fmt(r[1],1)}</td><td class="n">${r[2]}</td><td>${r[3]}</td></tr>`).join('');
+
+  const fmd=v('fmd'), fmm=v('fmm');
+  $('att').innerHTML=`<tr><th>Devam</th><th class="n">Gereken bordro</th><th class="n">Fark (mevcut ${fmt(mb)})</th><th class="n">FM saat/gün</th><th class="n">Ek kişi</th></tr>`+
+  [1,0.9,0.85,0.73].map(d=>{
+    const need=Math.ceil(R.tot/d), on=mb*d, gap=Math.max(0,(R.tot-on)*R.sa), fm=Math.min(gap,on*fmd), rest=gap-fm;
+    const ek=rest>0?Math.ceil(rest/R.sa/d):0, sel=Math.abs(d-dv)<1e-6;
+    return `<tr style="${sel?'font-weight:600':''}"><td>%${fmt(d*100)}${sel?' ✓':''}</td><td class="n">${fmt(need)}</td><td class="n">${need>mb?'+':''}${fmt(need-mb)}</td><td class="n">${fmt(fm)}</td><td class="n">${ek?fmt(ek):'–'}</td></tr>`;
+  }).join('');
+  {
+    const on=mb*dv, gap=Math.max(0,(R.tot-on)*R.sa), fm=Math.min(gap,on*fmd), perP=on?fm/on:0;
+    $('fmNote').textContent= gap<=0 ? `Mevcut ${fmt(mb)} kişilik bordro devam %${fmt(dv*100)} ile bu gün tipini fazla mesaisiz karşılıyor.`
+      : `Seçili devamda kişi başı ${fmt(perP,1)} saat FM gerekir. Aylık ${fmt(fmm,1)} saat sınırıyla bu gün tipi ayda en fazla ${fmt(Math.floor(fmm/Math.max(perP,0.01)))} gün böyle karşılanır.`;
+  }
+
+  const over=R.hb>hmax||Math.ceil(R.pak)>ist;
+  $('optT').textContent=over?'Sığmıyor: seçenekler':'Seçenekler (bu gün tipi tek vardiyada sığıyor)';
+  const A_hb=R.hb/2, A_pk=Math.ceil(R.pak/2), B_hb=R.top/(R.hc+1), B_ist=ist+8;
+  $('opts').innerHTML=[
+    ['A · İki vardiya',`Hücre başı ${fmt(A_hb,1)} kişi/vardiya, ${fmt(A_pk)} istasyon/vardiya.`,A_hb<=hmax&&A_pk<=ist,'Yatırım yok; ikinci vardiya şefi ve kargo çekişi gerekir.'],
+    ['B · 3. hücre + 8 istasyon',`Hücre başı ${fmt(B_hb,1)} kişi, ${fmt(B_ist)} istasyon (ihtiyaç ${fmt(Math.ceil(R.pak))}).`,B_hb<=hmax&&Math.ceil(R.pak)<=B_ist,'Doğu rezerv alanı; raf, araba ve kurulum yatırımı.'],
+    ['C · Öneri',over?'2027 başında A ile başla; büyüme Aralık bütçesiyle teyit edilince B.':'Bugün gerek yok. Büyüme teyidinde önce A, sonra B.',true,'Rezerv alan korunur; karar 24.11.']
+  ].map(([h,a,ok,b])=>`<div class="panel"><h3>${h} ${st(ok?'c-ok':'c-bad',ok?'sığar':'sığmaz')}</h3><p>${a}</p><p class="hint">${b}</p></div>`).join('');
+
+  const vasH=v('t1')/v('r1')+v('t2')/v('r2')+v('vt')/v('r3'), vs=vasH/(v('vg')*7.75), vh=Math.ceil(vs/5), vbn=Math.ceil(vs/dv);
+  $('vasOut').innerHTML=`<div class="res" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+    <div class="kpi"><div class="v">${fmt(vs,1)}</div><div class="l">sahada kişi/gün</div></div>
+    <div class="kpi"><div class="v ${vh>4?'hot':''}">${fmt(vh)}</div><div class="l">hat (5 kişi) · Kazan'da 4 + 2 yedek</div></div>
+    <div class="kpi"><div class="v">${fmt(vbn)}</div><div class="l">bordro gereken (devam %${fmt(dv*100)})</div></div>
+    <div class="kpi"><div class="v">${vbn>v('vb')?'+':''}${fmt(vbn-v('vb'))}</div><div class="l">mevcut ${fmt(v('vb'))} kişiye göre</div></div></div>
+    <p class="hint">${fmt(vasH)} adam-saat/ay · karma ${fmt((v('t1')+v('t2')+v('vt'))/vasH)} adet/adam-saat. ${vh>6?st('c-bad','6 hat yerini aşıyor'):vh>4?st('c-warn','yedek hat yerleri kullanılır'):st('c-ok','4 hatta sığıyor')}</p>`;
+
+  drawPlan(R,hmax,ist);
+}
+
+function drawPlan(R,hmax,ist){
+  const s=$('plan'), W=s.clientWidth, H=s.clientHeight; if(!W) return;
+  const X0=99.5,X1=152,Y0=48,Y1=72.5, k=Math.min((W-20)/(X1-X0),(H-20)/(Y1-Y0));
+  const ox=(W-(X1-X0)*k)/2, oy=(H-(Y1-Y0)*k)/2;
+  const x=m=>ox+(m-X0)*k, y=m=>oy+(m-Y0)*k, w=m=>m*k;
+  const small=W<520, out=[];
+  const rect=(a,b,c,d,f,extra='')=>out.push(`<rect x="${x(a)}" y="${y(b)}" width="${w(c-a)}" height="${w(d-b)}" fill="${f}" ${extra}/>`);
+  const txt=(a,b,t,c='var(--soft)')=>out.push(`<text x="${x(a)}" y="${y(b)}" font-size="${small?11:13}" fill="${c}" text-anchor="middle" font-family="Red Hat Text" font-weight="600">${t}</text>`);
+  rect(100.2,64.7,150.5,71,'var(--cell)','opacity=".55"'); txt(125.3,70.3,'Saçak · kargo kafesleri');
+  rect(100.2,48.6,105.2,63.9,'var(--cell)');
+  const hx=[105.7,129.1];
+  const perCell=R.hb, col=perCell>hmax*1.25?'var(--bad)':perCell>hmax?'var(--warn)':'var(--ok)';
+  hx.forEach((a,i)=>{
+    rect(a,49,a+11.2,60.2,'var(--rack)'); rect(a+0.88,49.88,a+10.32,59.32,'var(--cell)');
+    rect(a+2.68,51.68,a+8.52,57.52,'var(--isl)');
+    txt(a+5.6,55.1,`H${i+1}`);
+    const n=Math.round(perCell), L=30.56, ix=a+1.78, iy=50.78, sd=7.64;
+    for(let j=0;j<n;j++){ let d=(j+0.5)*L/n, px,py;
+      if(d<sd){px=ix+d;py=iy+sd} else if(d<2*sd){px=ix+sd;py=iy+sd-(d-sd)} else if(d<3*sd){px=ix+sd-(d-2*sd);py=iy} else {px=ix;py=iy+(d-3*sd)}
+      out.push(`<circle class="dot" cx="${x(px)}" cy="${y(py)}" r="${Math.max(3,w(0.42))}" fill="${col}"/>`);}
+  });
+  rect(117.4,49,128.6,63.9,'var(--cell)');
+  const need=Math.ceil(R.pak);
+  for(let j=0;j<16;j++){ const cx=j<8?118.2:124.6, cy=49.6+(j%8)*1.6, on=j<Math.min(need,ist);
+    rect(cx,cy,cx+3.6,cy+1.2,on?'var(--res)':'var(--panel)','stroke="var(--line)"');}
+  txt(123,63.5,need>ist?`Paketleme · ${need}/${ist} (+${need-ist})`:`Paketleme · ${need}/${ist}`, need>ist?'var(--bad)':'var(--soft)');
+  rect(140.4,48.6,151.5,63.9,'var(--cell)');
+  const hn=Math.ceil(R.hp);
+  for(let j=0;j<hn;j++) out.push(`<circle class="dot" cx="${x(145.2+(j%2)*1.6)}" cy="${y(51+Math.floor(j/2)*1.6)}" r="${Math.max(3,w(0.42))}" fill="var(--band)" stroke="#fff"/>`);
+  txt(146,63.2,'Hazır paket');
+  if(!small) txt(102.7,56.5,'Koli');
+  s.innerHTML=out.join('');
+  $('planNote').textContent=`Ölçekli plan (v8.10). Hücre döngüsünde ${fmt(perCell,1)} toplayıcı/hücre, aralık ${fmt(R.mpp,1)} m. Yeşil rahat, turuncu sınırda, kırmızı sıkışma (eşik ${fmt(hmax)} kişi). Magenta kutular dolu istasyonlar.`;
+}
+
+ids.forEach(id=>$(id).addEventListener('input',()=>{document.querySelectorAll('#presets button').forEach(b=>b.setAttribute('aria-pressed','false'));render();}));
+$('presets').addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return;
+  const [g,r]=P[b.dataset.p]; $('gf').value=g; $('gr').value=r;
+  document.querySelectorAll('#presets button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false')); render();});
+const ro=new ResizeObserver(render); ro.observe($('plan'));
+render();
+}
+</script>
+</body>
+</html>
