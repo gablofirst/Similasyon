@@ -22,6 +22,12 @@ Bu klasör, claude.ai'deki "Kazan Depo Taşınma ve Yerleşim" projesinin 20.11.
 - `04_Artifactler/` — claude.ai artifact yedekleri: `Ostim_Pilot_Plani_v8.15.md`, `kadro_simulasyonu_v8.16/index.html`, `onay_sunumu_v8.12/project/` (slayt HTML'leri; görseller artifact'te).
 - `05_Kaynak/` — Python betikleri ve ara veri (TAM zip'ten köke alındı). `kit/in/bom.xlsx` = `01_Proje_Dosyalari/Fitness paketi vb tüm bomlar.xlsx` kopyası gerekir.
 
+## Ürün: depoplan (21.11.2026'dan itibaren)
+Kazan çalışmasından genelleştirilen, her şirketin kullanacağı depo planlama/simülasyon uygulaması.
+- `depoplan/` paket, `tests/` (Kazan referans testleri dahil), `docs/VERI_SEMASI.md`, `docs/URUN_YOL_HARITASI.md`.
+- Kural: her değişiklikten sonra `python3 -m pytest -q`; Kazan referans testleri (ABC/XYZ, v8.16 kadro) kırılmaz.
+- Kazan'a özgü sabitler (koordinat, SKU listesi) pakete girmez; parametre veya test verisi olur. Kazan verisi ürüne gömülmez.
+
 ## Çalıştırma sırası (devam notu §5)
 1. DWG → DXF (LibreDWG 0.13.3), `bg.py` → `asb_raw.pkl`, `asb_plan.pkl`
 2. `veri/*.json` → çıktı klasörü

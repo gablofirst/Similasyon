@@ -1,0 +1,16 @@
+[project]
+name = "depoplan"
+version = "0.1.0"
+description = "Veriden depo kararına: SKU profili, senaryo, kit, kadro; sonra slotting, yerleşim ve simülasyon"
+requires-python = ">=3.11"
+dependencies = ["pandas>=2.0", "numpy>=1.26", "pydantic>=2.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["depoplan"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

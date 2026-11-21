@@ -4,3 +4,4 @@ out/
 _tmp/
 .DS_Store
 ~$*
+.pytest_cache/
