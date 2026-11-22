@@ -1,0 +1,78 @@
+{
+ "v": 5,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-19T14:22:13Z"
+ },
+ "lists": "css",
+ "format": {
+  "v": 1,
+  "shared": [
+   "project/deck.css"
+  ]
+ },
+ "title": "Kazan Depo Yerleşim Planı · Onay Sunumu",
+ "order": [
+  "cover",
+  "ozet",
+  "bakis",
+  "hedef",
+  "veri",
+  "plan",
+  "alan",
+  "kapasite",
+  "kacis",
+  "akis",
+  "senaryo",
+  "hucre",
+  "stok",
+  "kit",
+  "hpkargo",
+  "kadro",
+  "vasb2b",
+  "buyume",
+  "wms",
+  "yatirim",
+  "risk",
+  "takvim",
+  "karar",
+  "sorular1",
+  "sorular2",
+  "ekler",
+  "planoklu"
+ ],
+ "cover": "cover",
+ "sections": {
+  "s1": {
+   "description": "Talep ve özet",
+   "start": "cover"
+  },
+  "s2": {
+   "description": "Yerleşim, kapasite ve kaçış",
+   "start": "hedef"
+  },
+  "s3": {
+   "description": "Operasyon modeli ve kadro",
+   "start": "akis"
+  },
+  "s4": {
+   "description": "2027 büyümesi, WMS, yatırım, risk ve takvim",
+   "start": "buyume"
+  },
+  "s5": {
+   "description": "Karar ve ekler",
+   "start": "karar"
+  }
+ },
+ "faces": {
+  "space-grotesk": {
+   "family": "Space Grotesk",
+   "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;600&display=swap"
+  },
+  "inter": {
+   "family": "Inter",
+   "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;600&display=swap"
+  }
+ },
+ "designSystems": []
+}

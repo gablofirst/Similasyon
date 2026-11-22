@@ -4,7 +4,7 @@ Uygulama açılışta "sektör seç" ile bu şablonlardan birini yükler; kullan
 hacim ve verimi kendi ölçümüyle değiştirir. Tüm rakamlar ÖRNEK başlangıç değerleridir (sektör
 kıyaslaması değildir); hiçbir müşterinin verisi değildir.
 
-Çalıştırma: python3 app/sablonlar.py
+Çalıştırma: python3 app/sablonlar.py  → sablonlar.json (testler) + sablonlar.js (uygulama)
 """
 import copy
 import json
@@ -280,6 +280,11 @@ def uret():
 
 
 if __name__ == "__main__":
+    veri = uret()
     out = Path(__file__).with_name("sablonlar.json")
-    out.write_text(json.dumps(uret(), ensure_ascii=False, indent=1), encoding="utf-8")
+    out.write_text(json.dumps(veri, ensure_ascii=False, indent=1), encoding="utf-8")
+    # uygulama dosyadan (file://) açıldığında da yüklensin diye aynı veri JS olarak
+    Path(__file__).with_name("sablonlar.js").write_text(
+        "/* app/sablonlar.py ile üretilir; elle düzenlemeyin */\nwindow.DEPO_SABLON = "
+        + json.dumps(veri, ensure_ascii=False) + ";\n", encoding="utf-8")
     print(out)

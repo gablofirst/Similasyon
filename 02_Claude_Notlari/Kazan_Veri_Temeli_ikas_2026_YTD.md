@@ -1,8 +1,6 @@
 # Kazan Depo Veri Temeli — ikas E-ticaret Siparişleri 2026 YTD
 
-**Sabit referans veri.** Kazan e-ticaret hattı, toplama alanı, hazır paket, kargo çıkışı ve kadro hesapları bu dosyadaki değerlere dayanır. Kaynak: ikas sipariş export'u (Ocak–Ekim 2026, ürün satırı seviyesi). Son güncelleme 10 Kasım 2026 (koli dağılımı ve otomasyon değerlendirmesi, bölüm 10). ikas verisi Nisan dahil tam.
-
-> Not (v8.12): §11'deki "e-ticaret %20/yıl" geçersizdir; 2027 için ×1,5 esas alınır (bkz. Kazan_2027_Buyume_Varsayimi.md ve Devam Notu v8.16).
+**Sabit referans veri.** Kazan e-ticaret hattı, toplama alanı, hazır paket, kargo çıkışı ve kadro hesapları bu dosyadaki değerlere dayanır. Kaynak: ikas sipariş export'u (Ocak–Ekim 2026, ürün satırı seviyesi). Son güncelleme 21 Kasım 2026 (bölüm 11: 2027 büyümesi ×1,5). ikas verisi Nisan dahil tam.
 
 ## 0. Kapsam ve veri kalitesi
 
@@ -205,24 +203,24 @@ Toplama satırına göre ABC (A = satırların %80'i, B = %80–95, C = %95–10
 
 **Kazan Hat ve Kadro Planı, adım 4 "Otomasyonlu senaryo" (10.11.2026):** 135 bin sipariş/ay, varsayılan verimlerle (batch toplama 220 adet, gözden paketleme 70, tekli toplama 90, tekli kolileme 80 sipariş/adam-saat, destek %15) 1 ISIWALL + 1 ISIBAGGER **manuelle aynı kadroyu** veriyor (sahada 24, bordro 33). Otomasyonlu verim ≈ 30 sipariş/adam-saat, manuel 30. 175 bin € yatırımın 24 ayda dönmesi için ≈ 7 kişilik bordro azalışı, yani otomasyonlu verimin ≈ 37,5 sipariş/adam-saate çıkması gerekir. Gerekçe kadro değil, kapasite (pik, büyüme), doğruluk ve alan olmalı. Verimler ISITEC referans ziyareti ve pilotla teyit edilmeli.
 
-## 11. Planlama parametreleri (Sedat Birinci, 10.11.2026)
+## 11. Planlama parametreleri (Sedat Birinci, 10.11.2026; büyüme 20.11.2026'da güncellendi)
 
 | Parametre | Değer | Not |
 |---|---|---|
 | Kişi başı işveren maliyeti (cost to company) | **70.333,79 TL / FTE / ay** | yıllık 844.005 TL; 56,4 TL/€ kurla ≈ 14.965 € |
 | EUR/TL kuru | 56,4 | 4 Kasım 2026; yatırımlar € ile, işçilik TL ile hesaplanır |
-| E-ticaret büyümesi | **%20 / yıl, 2027 ve 2028** | sonrası sabit kabul; normal ay 135 bin → 2027 162 bin → 2028 194 bin **(GEÇERSİZ — 2027 ×1,5)** |
+| E-ticaret büyümesi | **2027: ×1,5 (kesin, Sedat 20.11.2026)** | normal ay 135 bin → 2027 ≈202,5 bin; ort. 5.291 → 7.937 sipariş/gün, P95 8.470 → 12.705. P95 de ×1,5 varsayıldı. Şirket geneli %80, Aralık bütçesiyle teyit. **2028+ kanal bazında büyüme Aralık bütçesinden bekleniyor.** 10.11'deki "%20/yıl, 2027 ve 2028" varsayımı **geçersiz**. |
 | Kazan kira / değerlendirme süresi | **10 yıl (120 ay)** | yatırım geri dönüşü bu süre içinde aranır |
 | En büyük ürün | Mass Gainer 2,5 kg, Ø16,5 × 27,5 cm kavanoz | 5,5 LT ambalaj; Whey 1,6 kg, Pea, Isolate, Mega paket aynı kavanozda |
 | Hedef | En verimli ve ideal depo çözümü, otomasyonlu ya da otomasyonsuz | ISITEC teklifi seçeneklerden biri |
 
-**SKU ölçü listesi (variant-mappings-boyutlu, 10.11.2026):** 818 varyant, ikas SKU profiliyle eşleşme toplama satırlarının %95,7'si (ilk 50 SKU %100, ilk 150 SKU %97,5). Ağırlık yok. 120 SKU'nun ölçüsü eksik (satırların %4,3'ü; bar 4'lü/8'li, tester, Protein Fusion 80, bazı Creatine 300 g ve Cream of Rice aromaları). Ağırlık, eksik ölçüler ve koli/palet bilgisi Sedat tarafından iletilecek (şablon: Kazan_SKU_Olcu_Agirlik_Koli_Sablonu.xlsx).
+**SKU ölçü listesi (variant-mappings-boyutlu, 10.11.2026):** 818 varyant, ikas SKU profiliyle eşleşme toplama satırlarının %95,7'si (ilk 50 SKU %100, ilk 150 SKU %97,5). Ağırlık yok. 120 SKU'nun ölçüsü eksik (satırların %4,3'ü; bar 4'lü/8'li, tester, Protein Fusion 80, bazı Creatine 300 g ve Cream of Rice aromaları). Ağırlık, eksik ölçüler ve koli/palet bilgisi Sedat tarafından iletilecek (şablon: Kazan_SKU_Olcu_Agirlik_Koli_Sablonu.xlsx). Logo ölçü/ağırlık dosyası `Urun_Olcu_Agirlik_Logo_19112026.xlsx` 21.11'de projeye eklendi, henüz işlenmedi.
 - ISIWALL 3D'ye (≤ 380×300×150 mm, ≤ 3 kg) sığmayan: 5,5 LT kavanoz ve termal korse. Satırların %3,9'u, çok ürünlü siparişlerin en fazla %13,7'si → manuel hat.
 - Cream of Rice 1 kg ve Whey 400 g 1,5 LT kutu (12,5 × 11,8 × 16,5) → sığıyor.
 - Ambalaj formu (satır payı): silindir %58,6 · kutu %36,9 · karma paket %4,5.
 - Tekli siparişlerin teorik %87'si koli1'e sığıyor (paketleme analizinde tüm siparişlerde koli1 %40) → desi tasarrufu potansiyeli, sahada doğrulanacak.
 
-**Otomasyon sonucu (Hat ve Kadro Planı adım 4, bu parametrelerle):** 1 ISIWALL + 1 ISIBAGGER bordroyu manuelle hemen hemen aynı tutuyor (2028+: 47 → 46); 175 bin € yatırım 10 yılda dönmüyor. Başabaş ≈ 2 kişi bordro azalışı, otomasyonlu verim ≈ 31,5 sipariş/adam-saat (manuel 30). Karar pilot / referans sahada ölçülecek verime bağlı; ISIBAGGER fiyatı bekleniyor.
+**Otomasyon sonucu (Hat ve Kadro Planı adım 4, 10.11'deki eski %20/yıl büyümesiyle):** 1 ISIWALL + 1 ISIBAGGER bordroyu manuelle hemen hemen aynı tutuyor (2028+: 47 → 46); 175 bin € yatırım 10 yılda dönmüyor. Başabaş ≈ 2 kişi bordro azalışı, otomasyonlu verim ≈ 31,5 sipariş/adam-saat (manuel 30). Karar pilot / referans sahada ölçülecek verime bağlı; ISIBAGGER fiyatı bekleniyor. ×1,5 büyümeyle yeniden hesaplanmadı.
 
 ## Ekler (proje dosyaları)
 
