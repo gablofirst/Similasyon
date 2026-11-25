@@ -39,3 +39,11 @@ günler içinde verdiği uygulama. Referans vaka: Kazan (Protein Ocean) — her 
 ```bash
 python3 -m pytest -q
 ```
+
+## Kararlar (25.11.2026) — SaaS vizyonu "Rampa" (çalışma adı)
+Ayrıntı: `04_Artifactler/rampa_vizyon/index.html` · artifact https://claude.ai/artifact/WWf2gAdNG8whCkiJk48s6p
+| Karar | Gerekçe | Risk | Sonraki adım |
+|---|---|---|---|
+| depoplan modüler aboneliğe açılır: D1 iş gücü, D2 personel/beceri, D3 layout, T1 navlun fatura denetimi, T2 teklif kıyaslama, K1 AI kokpit | Hedef: e-ticaret, FMCG, otomotiv yedek parça, perakende lojistik müdürleri; TR'de üçünü birlikte sunan ürün bulunamadı (kesin değil) | Format çeşitliliği, yasal kural hatası, büyük WMS'lerin benzer modülü | 5 müşteri görüşmesi, gerçek sözleşme+fatura ile T1 prototipi |
+| MVP = D1+D2 ve T1 (karayolu FTL+parsiyel) | Excel ile çalışır, entegrasyon beklemez; T1 ilk ayda tasarruf gösterir | AI çıkarımında hata → insan doğrulama adımı zorunlu | Scheduling Tool mantığı (sürücü dönüşümü, forecast doğruluğu, saat dilimi panosu) D1'e |
+| Fazla mesai 4857 sınırlarıyla (45 s/hafta, 11 s/gün, 270 s/yıl, yazılı onay, gece 7,5 s) parametre tablosunda | Müdür ek kaynak kararını yasal çerçevede görmeli | Hukuk teyidi yok | İş hukukçusu kontrolü |

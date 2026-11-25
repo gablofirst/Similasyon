@@ -1,0 +1,344 @@
+<title>Rampa Ürün Vizyonu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: tek kolon rapor, sol kenarda "rampa kapısı" etiketleri (D1, D2 …) bölüm numarası değil, modül kodu taşır */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --ink:#14202e; --muted:#566373; --line:#d9dee5;
+  --accent:#f2b705; --accent-ink:#1a1400; --navy:#1d3557; --ok:#1f7a4d; --warn:#b26a00; --crit:#b3261e;
+  --soft:#eef1f5;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f151d; --surface:#17202b; --ink:#e7ecf2; --muted:#9aa7b6; --line:#2a3644;
+  --accent:#f5c432; --accent-ink:#1a1400; --navy:#8fb3e0; --ok:#4cc38a; --warn:#f0a43a; --crit:#ff7a70; --soft:#1c2733; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151d; --surface:#17202b; --ink:#e7ecf2; --muted:#9aa7b6; --line:#2a3644;
+  --accent:#f5c432; --accent-ink:#1a1400; --navy:#8fb3e0; --ok:#4cc38a; --warn:#f0a43a; --crit:#ff7a70; --soft:#1c2733; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15.5px;line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h2{font-size:clamp(1.45rem,3vw,1.9rem);font-weight:800}
+h3{font-size:1.08rem;font-weight:700}
+p{margin:0;max-width:68ch}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+a{color:var(--navy)}
+/* hazard tape */
+.tape{height:10px;background:repeating-linear-gradient(-45deg,var(--accent) 0 14px,var(--ink) 14px 28px)}
+.hero{padding-block:44px 32px;display:grid;gap:18px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;letter-spacing:-.01em}
+.hero h1 span{background:var(--accent);color:var(--accent-ink);padding:0 .18em}
+.lede{font-size:1.15rem;max-width:62ch}
+.pillrow{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);background:var(--surface);padding:3px 10px;border-radius:99px}
+section{padding-block:34px;border-top:1px solid var(--line);display:grid;gap:18px}
+.door{display:inline-block;font-family:var(--f-mono);font-weight:500;font-size:.78rem;background:var(--ink);color:var(--bg);padding:2px 8px;margin-right:10px;vertical-align:middle;letter-spacing:.06em}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.card{background:var(--surface);border:1px solid var(--line);padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.card .k{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card ul{margin:0;padding-left:18px}
+.card li{margin:2px 0}
+.io{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.93rem}
+.io b{font-family:var(--f-mono);font-weight:500;font-size:.75rem;color:var(--muted);padding-top:3px}
+.tbl{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-weight:500;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:1px 8px;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}.c-crit{color:var(--crit)}.c-mut{color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;gap:0;counter-reset:s}
+.step{flex:1 1 150px;min-width:0;background:var(--surface);border:1px solid var(--line);margin:-1px 0 0 -1px;padding:14px;display:grid;gap:6px}
+.step .n{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.step.lock{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.step.lock .n{color:var(--accent-ink)}
+.formula{font-family:var(--f-mono);background:var(--ink);color:var(--bg);padding:16px 18px;font-size:.92rem;overflow-x:auto;white-space:pre;line-height:1.7}
+.ladder{display:grid;gap:6px}
+.rung{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);padding:10px 14px}
+.rung .lv{font-family:var(--f-display);font-weight:800;font-size:1.3rem;line-height:1}
+.brief{background:var(--surface);border:1px solid var(--line);display:grid}
+.brief header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--soft)}
+.brief .item{display:grid;grid-template-columns:6px 1fr;gap:0 14px;padding:12px 16px 12px 0;border-bottom:1px solid var(--line)}
+.brief .item:last-child{border-bottom:0}
+.brief .bar{align-self:stretch}
+.bar.crit{background:var(--crit)}.bar.warn{background:var(--warn)}.bar.ok{background:var(--ok)}
+.brief .act{font-size:.88rem;color:var(--muted)}
+.brief .btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.brief .btns span{font-family:var(--f-mono);font-size:.72rem;border:1px solid var(--line);padding:2px 8px}
+.price{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.price .card.hi{border:2px solid var(--accent)}
+.amt{font-family:var(--f-display);font-weight:800;font-size:1.7rem}
+.amt small{font-family:var(--f-body);font-weight:400;font-size:.85rem;color:var(--muted)}
+.note{border-left:4px solid var(--accent);background:var(--surface);padding:12px 16px;font-size:.93rem}
+.dec{display:grid;gap:10px}
+.dec .card{grid-template-columns:110px 1fr;gap:6px 14px}
+.dec .card b{font-family:var(--f-mono);font-size:.74rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding-top:3px}
+@media (max-width:560px){.dec .card{grid-template-columns:1fr}.io{grid-template-columns:1fr}}
+.src{font-size:.85rem;columns:2 300px;column-gap:28px}
+.src li{break-inside:avoid;margin-bottom:4px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="tape" aria-hidden="true"></div>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Ürün vizyonu · taslak v0.1 · 25.11.2026 · çalışma adı</div>
+  <h1><span>Rampa</span> · lojistik müdürünün karar masası</h1>
+  <p class="lede">E-ticaret, FMCG, otomotiv yedek parça ve perakende lojistik/tedarik zinciri müdürleri için aylık veya yıllık abonelikle alınan modüler bir platform. Depoda <b>kaç kişi, hangi proseste, ne zaman</b>; dağıtımda <b>hangi fatura doğru, hangi teklif en iyi</b> sorularını dakikalar içinde ve gerekçesiyle cevaplar. Uzun vadede WMS/TMS/ERP'ye bağlanıp her sabah önerilerini sunan, lojistiğe özel bir AI kokpite dönüşür.</p>
+  <div class="pillrow">
+    <span class="pill">Depo iş gücü what-if</span><span class="pill">Layout + ürün master simülasyonu</span><span class="pill">Navlun fatura denetimi</span><span class="pill">Teklif kıyaslama</span><span class="pill">AI günlük brifing</span><span class="pill">4857 İş Kanunu uyarıları</span>
+  </div>
+</header>
+
+<section>
+  <h2>Kimin hangi sorusunu çözüyor</h2>
+  <div class="grid">
+    <div class="card"><div class="k">Pazartesi 08:30</div><h3>"Bu hafta hacim %40 artıyor, yetişir miyiz?"</h3><p class="muted">Bugün: Excel'de forecast × cycle time, elle vardiya planı. Rampa: forecast yükle → proses bazlı FTE açığı, fazla mesai ihtiyacı, yasal sınır kontrolü, ek kaynak önerisi.</p></div>
+    <div class="card"><div class="k">Ay sonu</div><h3>"Nakliye faturaları sözleşmeye uyuyor mu?"</h3><p class="muted">Bugün: yüzlerce satır faturayı tarife tablosuyla gözle kıyaslamak. Rampa: sözleşme bir kez dijitalleşir, fatura her ay yüklenir, sapmalar listelenir, müdür onaylar, ay kilitlenir.</p></div>
+    <div class="card"><div class="k">Yıllık ihale</div><h3>"Beş teklif geldi, hangisi bize en ucuz?"</h3><p class="muted">Bugün: teklif fiyatlarını yan yana koymak. Rampa: her teklifi geçen 12 ayın gerçek sevkiyat verisine uygular, toplam maliyeti, rota bazlı kazananı ve bölünmüş ihale önerisini gerekçesiyle verir.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Pazar taraması: kim ne yapıyor</h2>
+  <p>Global pazarda her parçanın güçlü bir oyuncusu var, ama hepsi <b>tek bir parçayı</b> çözüyor ve büyük ölçüde kurumsal (SAP, Blue Yonder, Manhattan) müşteriye satıyor. Türkiye'de yaptığım taramada depo iş gücü what-if, navlun fatura denetimi ve teklif analizini birlikte, Türkçe ve Türk iş hukukuna göre sunan bir ürün bulamadım. Bu kesin bir yokluk kanıtı değil; satış öncesi derin bir saha taraması gerekir.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Oyuncu</th><th>Alan</th><th>Ne yapıyor</th><th>Rampa için çıkarım</th></tr></thead>
+    <tbody>
+      <tr><td><b>Blue Yonder</b> WLM + Microsoft "Warehouse Ops" ajanı</td><td>İş gücü, AI</td><td>Copilot içinde Daily Brief: performans, istisnalar, riskler, önerilen aksiyonlar. Yalnız okur; aksiyon BY uygulamalarında. Blue Yonder WMS şartı var.</td><td>"Günlük brifing" formatı doğrulanmış bir ihtiyaç. Biz WMS'ten bağımsız olacağız.</td></tr>
+      <tr><td><b>Easy Metrics</b></td><td>İş gücü performansı</td><td>Bulut, AI destekli depo performans yönetimi; 3PL kârlılığı modülü. Fiyat teklif usulü.</td><td>Mid-market'e satılabildiğinin kanıtı. Türkiye'de yok.</td></tr>
+      <tr><td><b>Rebus</b> (Longbow)</td><td>İş gücü, görünürlük</td><td>WMS ve LMS üstünde gerçek zamanlı SaaS katmanı; 500+ depo.</td><td>"WMS'in üstünde katman" mimarisi bizim 3. faz hedefimiz.</td></tr>
+      <tr><td><b>Optioryx</b> Pulse</td><td>Depo optimizasyonu</td><td>Modül bazlı fiyat; dizinlerde €120'den başlayan sabit ücret görünüyor (doğrulanmadı).</td><td>Avrupa'da düşük giriş fiyatıyla modüler satış yapılabiliyor.</td></tr>
+      <tr><td><b>CreateASoft</b> Simcad, <b>AnyLogic</b>, <b>Arena</b></td><td>Simülasyon</td><td>Kesikli olay simülasyonu, dijital ikiz. Güçlü ama uzman ve proje ister.</td><td>Biz simülasyonu müdürün kendisinin kullanacağı kadar sade sunacağız.</td></tr>
+      <tr><td><b>Loop</b>, <b>Trimble</b>, <b>FreightVerify</b>, <b>Transporeon</b> Freight Audit</td><td>Navlun denetimi</td><td>Sözleşme ve tarife dijitalleştirme, fatura satırı kontrolü, toleranslar. FreightVerify kullanıcı başı $99'dan başlıyor; Trimble %9'a varan tasarruf iddia ediyor.</td><td>Ödeme hacminin 6,8 → 14,2 milyar $ büyüdüğü bir kategori (DataIntelo tahmini). Türkiye'ye e-Fatura/UBL ve TL tarife yapısıyla uyarlanmış ürün yok.</td></tr>
+      <tr><td><b>Freightender</b>, <b>Shipwell</b>, <b>Goodship</b></td><td>İhale/teklif</td><td>RFQ yönetimi, teklif karşılaştırma, taşıyıcı performansını teklif ekranına çekme.</td><td>Bizim farkımız: teklifi <b>müşterinin kendi sevkiyat geçmişine</b> uygulayıp toplam maliyeti hesaplamak.</td></tr>
+      <tr><td><b>JetLM</b> (MDP Group)</td><td>TR · WMS+TMS</td><td>Depo ve taşıma tek portalda; tarife anlaşmaları, taşıyıcı bazlı masraf yönetimi ve fatura ön kontrolü.</td><td>En yakın yerli rakip. SAP odaklı ve proje bazlı; what-if iş gücü ve self-servis abonelik görünmüyor.</td></tr>
+      <tr><td><b>Optiyol</b>, <b>Navlungo</b>, <b>PIXSelect</b>, <b>Cargoson</b></td><td>TR · parça çözümler</td><td>Rota optimizasyonu (2019'dan beri SaaS), navlun pazaryeri, video analitiği, gönderici TMS.</td><td>Entegrasyon ortağı olabilirler; doğrudan rakip değiller.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Konumlandırma:</b> "Kurumsal yazılımın derinliği, Excel'in hızı, Türk mevzuatına göre." Hedef ilk müşteri: 1–5 depolu, 30–300 depo çalışanı olan, henüz LMS ve freight audit yazılımı almamış şirketler.</div>
+</section>
+
+<section>
+  <h2>Paketler</h2>
+  <p>Her paket tek başına alınabilir; birlikte alındıkça veri birbirini besler. Depo tarafı "ne kadar veri o kadar kapsam" ilkesiyle kademelidir: sadece proses + cycle time ile başlar, personel, ürün master, layout ve WMS geldikçe derinleşir.</p>
+  <div class="grid">
+    <div class="card">
+      <div><span class="door">D1</span><h3 style="display:inline">Depo İş Gücü Stüdyosu</h3></div>
+      <div class="io"><b>GİRDİ</b><span>Proses kütüphanesinden seçim (kabul, yerleştirme, besleme, toplama, paketleme, VAS, yükleme, iade …), cycle time veya saatlik verim, iş yükü sürücüsü (sipariş, satır, koli, palet), günlük/aylık forecast</span>
+      <b>ÇIKTI</b><span>Proses ve saat dilimi bazlı FTE, darboğaz, fazla mesai saati, yasal sınır uyarısı, ek kaynak önerisi, senaryo karşılaştırma</span></div>
+    </div>
+    <div class="card">
+      <div><span class="door">D2</span><h3 style="display:inline">Personel ve Beceri</h3></div>
+      <div class="io"><b>GİRDİ</b><span>Personel listesi (Excel), proses bazlı beceri seviyesi 1–4, vardiya, izin/rapor, yıllık kullanılmış fazla mesai</span>
+      <b>ÇIKTI</b><span>Kişi-proses ataması, çok becerili personelle esneklik, yedeksiz kritik beceri uyarısı, eğitim planı, 270 saat sayacı</span></div>
+    </div>
+    <div class="card">
+      <div><span class="door">D3</span><h3 style="display:inline">Layout ve Ürün Simülasyonu</h3></div>
+      <div class="io"><b>GİRDİ</b><span>As-is DWG/DXF, ürün master (en, boy, yükseklik, ağırlık, koli içi adet), raf tipleri, sipariş geçmişi</span>
+      <b>ÇIKTI</b><span>Raf/kolon çakışma kontrolü, lokasyon kapasitesi, ABC/XYZ slotting, yürüme mesafesi, akış simülasyonu, to-be karşılaştırma</span></div>
+    </div>
+    <div class="card">
+      <div><span class="door">T1</span><h3 style="display:inline">Navlun Sözleşme ve Fatura Denetimi</h3></div>
+      <div class="io"><b>GİRDİ</b><span>FTL, parsiyel, ekspres kargo, havayolu, denizyolu, intermodal sözleşmeler ve tarifeler; her ay faturalar (e-Fatura UBL XML, PDF, Excel) ve ham sevkiyat verisi</span>
+      <b>ÇIKTI</b><span>Satır bazlı sapma, mükerrer fatura, yanlış desi/kg, yakıt farkı hatası, itiraz listesi, onaylı ay kaydı, Ocak–Aralık özet</span></div>
+    </div>
+    <div class="card">
+      <div><span class="door">T2</span><h3 style="display:inline">Teklif Kıyaslama</h3></div>
+      <div class="io"><b>GİRDİ</b><span>Farklı formatlardaki taşıyıcı teklifleri, iç sipariş ve dağıtım verisi (rota, ağırlık, desi, araç tipi, sıklık)</span>
+      <b>ÇIKTI</b><span>Geçmiş hacme uygulanmış toplam maliyet, rota bazlı kazanan, bölünmüş ihale, hassasiyet (hacim ±%20, yakıt ±%10), gerekçeli özet</span></div>
+    </div>
+    <div class="card">
+      <div><span class="door">K1</span><h3 style="display:inline">AI Kokpit (Enterprise)</h3></div>
+      <div class="io"><b>GİRDİ</b><span>WMS/TMS/ERP/e-Fatura entegrasyonu veya günlük dosya bırakma (SFTP, e-posta)</span>
+      <b>ÇIKTI</b><span>Her sabah brifing, istisna uyarıları, önerilen aksiyon, soru-cevap ("dün neden 2 saat geç kaldık?"), onay akışı</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="door">D1</span>İş gücü motoru: hesap nasıl yapılır</h2>
+  <p>Motor, geçmişte kullandığın Scheduling Tool'un mantığını (iş yükü sürücüsü × cycle time ÷ verimli süre, güvenlik payı, sürücü dönüşümü) web'e taşır ve depoplan paketindeki süreç modeline bağlar. Formül şeffaftır; müdür her sayının nereden geldiğini görür.</p>
+<div class="formula">Gereken saat (proses)  = Hacim × Cycle time (sn) ÷ 3600 × (1 + güvenlik payı) × (1 + akış kaybı)
+Gereken FTE            = Gereken saat ÷ kişi başı verimli saat (ör. 7,5)
+Açık (saat)            = Gereken saat − Planlı kişi × verimli saat × beceri katsayısı
+Fazla mesai kapasitesi = Σ kişi × min(günlük kalan yasal saat, haftalık kalan, yıllık 270 − kullanılan)
+Ek kaynak              = Açık − Fazla mesai kapasitesi   (pozitifse öneri motoru devreye girer)</div>
+
+  <h3>Örnek: e-ticaret deposu, Kasım kampanya haftası (örnek değerler)</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Proses</th><th>Sürücü</th><th>Forecast/gün</th><th>CT (sn)</th><th>Gereken saat</th><th>FTE</th><th>Mevcut</th><th>Durum</th></tr></thead>
+    <tbody>
+      <tr><td>Toplama</td><td>Satır</td><td class="num">18.000</td><td class="num">20</td><td class="num">110,0</td><td class="num">14,7</td><td class="num">10</td><td><span class="chip c-crit">açık 35 saat</span></td></tr>
+      <tr><td>Paketleme</td><td>Koli</td><td class="num">6.000</td><td class="num">50</td><td class="num">91,7</td><td class="num">12,2</td><td class="num">12</td><td><span class="chip c-warn">açık 1,7 saat</span></td></tr>
+      <tr><td>Yükleme</td><td>Palet</td><td class="num">90</td><td class="num">300</td><td class="num">8,3</td><td class="num">1,1</td><td class="num">2</td><td><span class="chip c-ok">fazla 0,9 FTE</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Güvenlik payı %10. Toplamada 35 saatlik açık var. 10 toplayıcı haftalık 45 saati 5 güne yayıp günde 9 saat çalışıyorsa, günlük 11 saat sınırı kişi başı en fazla 2 saat fazla mesaiye izin verir: 10 × 2 × 0,9 verim = 18 saat. Kalan 17 saat ≈ 2,3 FTE ek kaynak gerekir. Yüklemedeki 0,9 FTE fazla, toplama becerisi 3+ ise önce oraya kaydırılır.</p>
+
+  <h3>Yasal kontroller (4857 sayılı İş Kanunu)</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Kural</th><th>Sınır</th><th>Rampa davranışı</th></tr></thead>
+    <tbody>
+      <tr><td>Haftalık çalışma (md. 63)</td><td class="num">45 saat</td><td>Üstü fazla çalışma olarak sayılır, %50 zamlı maliyet hesaplanır</td></tr>
+      <tr><td>Günlük üst sınır (md. 63)</td><td class="num">11 saat</td><td>Kişi bazında aşılırsa plan reddedilir, kırmızı uyarı</td></tr>
+      <tr><td>Yıllık fazla çalışma (md. 41)</td><td class="num">270 saat</td><td>Kişi bazlı sayaç; %80'de sarı, %100'de plan dışı</td></tr>
+      <tr><td>Fazla çalışma onayı (md. 41)</td><td>Yazılı onay</td><td>Personel kartında onay alanı; onaysız kişiye fazla mesai atanmaz</td></tr>
+      <tr><td>Gece çalışması (md. 69)</td><td class="num">7,5 saat</td><td>Gece vardiyasında fazla mesai önerilmez</td></tr>
+      <tr><td>Hafta tatili (md. 46)</td><td class="num">24 saat kesintisiz</td><td>7. gün çalışma önerisi tatil ücreti ve uyarıyla gelir</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Kurallar parametre tablosunda tutulur (toplu iş sözleşmesi, sektör ve ülke farkı için). Ürüne girmeden önce iş hukukçusu teyidi alınmalı.</p>
+
+  <h3>Fazla mesai yetmezse: öneri merdiveni</h3>
+  <div class="ladder">
+    <div class="rung"><div class="lv">1</div><div><b>Kaydırma.</b> Fazlası olan prosesten beceri seviyesi 3–4 olan personeli darboğaza taşı. Maliyet yok.</div></div>
+    <div class="rung"><div class="lv">2</div><div><b>Fazla mesai.</b> Yasal ve yıllık sayaç içinde, en ucuz saatten başlayarak. Maliyet: saat ücreti × 1,5.</div></div>
+    <div class="rung"><div class="lv">3</div><div><b>Hafta sonu / ek vardiya.</b> Cumartesi yarım gün veya kısa akşam vardiyası; cut-off saatine etkisi gösterilir.</div></div>
+    <div class="rung"><div class="lv">4</div><div><b>Geçici kaynak.</b> Taşeron veya geçici işçi; öğrenme eğrisi katsayısı (ilk 3 gün %60 verim) uygulanır, hangi prosese yerleştirileceği önerilir.</div></div>
+    <div class="rung"><div class="lv">5</div><div><b>Yapısal çözüm.</b> Kalıcı kadro, kalıcı ikinci vardiya, toplama yöntemi değişimi (batch, zone) veya otomasyon; geri ödeme süresiyle birlikte.</div></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="door">T1</span>Navlun denetimi: ay kapanış akışı</h2>
+  <div class="flow">
+    <div class="step"><span class="n">ADIM 1 · bir kez</span><b>Sözleşme</b><span class="muted">PDF/Excel tarife yüklenir, AI tabloya çevirir, müdür doğrular. Rota × araç × kg/desi kırılımı, yakıt endeksi, ek hizmetler, geçerlilik tarihi.</span></div>
+    <div class="step"><span class="n">ADIM 2 · her ay</span><b>Fatura + ham veri</b><span class="muted">e-Fatura XML, PDF veya Excel. Aynı ay için yeniden yükleme yeni sürüm açar.</span></div>
+    <div class="step"><span class="n">ADIM 3 · otomatik</span><b>Kontrol</b><span class="muted">Tarife eşleşmesi, mükerrer, desi/kg, yakıt farkı, sözleşme dışı ek ücret, sevkiyat kaydı olmayan fatura.</span></div>
+    <div class="step"><span class="n">ADIM 4</span><b>Analiz</b><span class="muted">Taşıyıcı, rota, kalem bazlı sapma; itiraz listesi ve taşıyıcıya gidecek mutabakat tablosu.</span></div>
+    <div class="step lock"><span class="n">ADIM 5 · müdür</span><b>Onay ve ay kilidi</b><span>Son yüklenen sürüm onaylanır; ay salt okunur olur, kim ne zaman onayladı kaydı tutulur.</span></div>
+  </div>
+  <p>Kilitli aylardan otomatik olarak <b>nakliye takip defteri</b> oluşur: ham veri, Ocak–Aralık özet tablo, taşıyıcı bazlı maliyet/kg, maliyet/sipariş, bütçe sapması. Excel'e dışa aktarılabilir, böylece finans ekibi aynı rakamla çalışır.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Kontrol kuralı</th><th>Örnek bulgu</th><th>Önem</th></tr></thead>
+    <tbody>
+      <tr><td>Tarife fiyatı ≠ fatura birim fiyatı</td><td>Ankara→İzmir 13,6 m tır: sözleşme 18.400 TL, fatura 19.750 TL</td><td><span class="chip c-crit">itiraz</span></td></tr>
+      <tr><td>Aynı irsaliye iki faturada</td><td>İrsaliye A-55120 hem Ekim hem Kasım faturasında</td><td><span class="chip c-crit">itiraz</span></td></tr>
+      <tr><td>Desi hesabı ürün master'dan farklı</td><td>Koli 40×30×30 = 12 desi, fatura 18 desi</td><td><span class="chip c-warn">incele</span></td></tr>
+      <tr><td>Yakıt farkı endeks dışı</td><td>Sözleşme: motorin ±%5 bandı dışında güncelleme; uygulanan %7, endeks %3,1</td><td><span class="chip c-warn">incele</span></td></tr>
+      <tr><td>Tolerans içinde</td><td>Yuvarlama farkı ≤ 1 TL</td><td><span class="chip c-ok">geçti</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">Tablodaki rakamlar örnektir.</p>
+</section>
+
+<section>
+  <h2><span class="door">T2</span>Teklif kıyaslama: "en ucuz teklif" değil, "bize en ucuz teklif"</h2>
+  <div class="grid">
+    <div class="card"><div class="k">1 · normalize</div><p>Her teklif farklı formatta gelir (km bazlı, rota bazlı, desi kademeli, palet başı). AI hepsini ortak tarife modeline çevirir, eksik kalemleri (yakıt, bekleme, hamaliye) işaretler.</p></div>
+    <div class="card"><div class="k">2 · geçmişe uygula</div><p>Son 12 ayın gerçek sipariş ve dağıtım verisi her tekliften geçirilir. Sonuç: teklif başına yıllık toplam maliyet, rota bazlı maliyet, kapsanmayan rotalar.</p></div>
+    <div class="card"><div class="k">3 · karar ve gerekçe</div><p>Tek kazanan ile bölünmüş ihale karşılaştırılır; hacim ve yakıt hassasiyeti, taşıyıcı performansı (OTIF, hasar oranı) ve kapasite riskiyle birlikte gerekçeli özet çıkar.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="door">K1</span>AI Kokpit: her sabah 07:30 brifingi</h2>
+  <p>Kokpit bir sohbet kutusu değil; dünkü veriyi okuyup bugün için önceliklendirilmiş aksiyon listesi çıkaran bir asistan. Her öneri hesabıyla gelir, uygulamak müdürün onayına bağlıdır. İlk sürüm yalnız okur ve önerir; WMS'e yazma ileride ve onay akışıyla açılır.</p>
+  <div class="brief" role="img" aria-label="Örnek günlük brifing ekranı">
+    <header><b>Günlük brifing · Çarşamba 26.11 · Kazan DC</b><span class="mono muted">örnek ekran</span></header>
+    <div class="item"><div class="bar crit"></div><div><b>Toplamada bugün 31 saat açık.</b> Forecast 16.800 satır (geçen Çarşamba +%38). Fazla mesai kapasitesi 18 saat; 3 kişinin yıllık 270 saati dolmak üzere.
+      <div class="act">Öneri: yüklemeden 1 kişiyi toplamaya kaydır, 8 kişiye 2 saat fazla mesai, 2 geçici personel (toplama zone B).</div>
+      <div class="btns"><span>Planı aç</span><span>Onayla</span><span>Alternatif iste</span></div></div></div>
+    <div class="item"><div class="bar warn"></div><div><b>Taşıyıcı X'in Kasım faturasında 14 itiraz kalemi.</b> Toplam fark 41.200 TL; 9'u desi farkı.
+      <div class="act">Öneri: mutabakat tablosunu taşıyıcıya gönder; ürün master'da 6 SKU'nun ölçüsü eksik.</div>
+      <div class="btns"><span>İtiraz listesi</span><span>Ürün master</span></div></div></div>
+    <div class="item"><div class="bar warn"></div><div><b>Paketleme istasyonu 3, dün saatlik verimin %22 altında.</b> Kayıp 14:00–16:00 arasında ve koli malzemesi beklemesinden.
+      <div class="act">Öneri: besleme turunu 14:00'ten önceye çek.</div></div></div>
+    <div class="item"><div class="bar ok"></div><div><b>Dün OTIF %98,6; cut-off'a 22 dakika pay kaldı.</b> Satır/saat (LPH) 112, hedef 110.</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Fiyatlandırma (hipotez)</h2>
+  <p>Modül başına aylık abonelik; yıllık ödemede 2 ay ücretsiz. Liste fiyatı USD/EUR, faturalama TL. Rakamlar pazar doğrulaması bekleyen başlangıç hipotezidir (karşılaştırma: Optioryx dizinde €120'den, FreightVerify kullanıcı başı $99'dan başlıyor).</p>
+  <div class="price">
+    <div class="card"><div class="k">Keşif</div><div class="amt">Ücretsiz</div><p class="muted">1 senaryo, 5 proses, örnek veri, Excel dışa aktarma yok. Pazarlama hunisi.</p></div>
+    <div class="card"><div class="k">Depo Pro · D1+D2</div><div class="amt">$190 <small>/ ay / depo</small></div><p class="muted">Sınırsız senaryo, personel ve beceri, forecast, yasal uyarılar. D3 layout eklentisi +$150.</p></div>
+    <div class="card"><div class="k">Navlun Pro · T1+T2</div><div class="amt">$290 <small>/ ay</small></div><p class="muted">Aylık 3.000 fatura satırına kadar, 10 sözleşme, teklif kıyaslama. Üstü kademeli.</p></div>
+    <div class="card hi"><div class="k">Lojistik Müdürü paketi</div><div class="amt">$490 <small>/ ay</small></div><p class="muted">Depo Pro + Navlun Pro, 3 kullanıcı. Hedef ana paket.</p></div>
+    <div class="card"><div class="k">Kokpit Enterprise · K1</div><div class="amt">$2.500+ <small>/ ay</small></div><p class="muted">Tüm modüller, WMS/TMS/ERP entegrasyonu, AI brifing, SSO. Kurulum ücreti ayrı.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Mimari ve veri güvenliği</h2>
+  <div class="grid">
+    <div class="card"><div class="k">Uygulama</div><ul><li>Web uygulaması, çok kiracılı (tenant başına ayrı veri satır güvenliği)</li><li>Hesap motoru: mevcut <span class="mono">depoplan</span> Python paketi (süreç, kadro, profil, kit) + tarayıcıda anlık hesap için <span class="mono">motor.js</span></li><li>Senaryolar sürümlü; her ay ve her plan geri izlenebilir</li></ul></div>
+    <div class="card"><div class="k">Veri alımı</div><ul><li>Excel/CSV şablonları ve kolon eşleştirme sihirbazı</li><li>e-Fatura UBL-TR XML ayrıştırıcı, PDF fatura ve tarife için AI çıkarım + insan doğrulaması</li><li>DWG → DXF (LibreDWG), çakışma kontrolü (<span class="mono">carp.py</span> mantığı)</li><li>Faz 3: WMS/TMS/ERP API bağlayıcıları, SFTP dosya bırakma</li></ul></div>
+    <div class="card"><div class="k">AI katmanı</div><ul><li>Lojistik araçlarıyla donatılmış ajan: hesabı modelden değil motordan alır, sayı uydurmaz</li><li>Her önerinin kaynağı ve formülü görünür</li><li>Okuma ile yazma ayrık; yazma (WMS'e görev, taşıyıcıya e-posta) her zaman onaylı</li></ul></div>
+    <div class="card"><div class="k">Uyum</div><ul><li>KVKK: personel verisi kişisel veri; veri işleme sözleşmesi, açık rıza metinleri, Türkiye/AB'de barındırma</li><li>Onay ve ay kilidi için değiştirilemez denetim kaydı</li><li>Rol bazlı yetki: müdür, planlamacı, finans (salt okur)</li></ul></div>
+  </div>
+</section>
+
+<section>
+  <h2>Geçmiş dosyalarından ne alıyoruz</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Dosya</th><th>İçinde ne var</th><th>Rampa'da nereye gidiyor</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Scheduling_tool_v0.9</td><td>Proses × iş yükü sürücüsü × ortalama cycle time, 7,5 verimli saat, %10 güvenlik payı, sürücü dönüşüm tablosu (sipariş = 2,5 satır, palet = 15 koli), forecast doğruluğu (13/26/52 hafta), saat dilimi bazlı yerleşim panosu</td><td>D1 motorunun çekirdeği. Sürücü dönüştürücü, forecast doğruluğu skoru ve saat dilimi panosu doğrudan ekran olur.</td></tr>
+      <tr><td class="mono">Beceri_Matrisi</td><td>Personel × beceri (RT, forklift, yükleme, RF, sipariş hazırlama, şarj) 1–4 seviye, hedef seviye</td><td>D2 personel yükleme şablonu. Seviye 3+ "bağımsız çalışır", 4 "eğitmen". Atama ve yedeklilik bu skordan.</td></tr>
+      <tr><td class="mono">LPH</td><td>Günlük sevk edilen satır, kadro, geçici, fazla mesai, izin, rapor; haftalık ve aylık LPH; vardiya bazlı araç/palet</td><td>Gerçekleşen verim takibi: planlanan CT ile gerçekleşen LPH kıyası, kalibrasyon ve Kokpit KPI'ı.</td></tr>
+      <tr><td class="mono">Lean_Audit_Blank</td><td>CEVA yalın denetimi: standart iş, 5S, performans yönetimi, kaizen, heijunka, pull; A–D seviye ve kanıt listesi, iyileştirme takvimi, sorun-karşı önlem</td><td>Ek modül "Operasyonel Olgunluk": öz değerlendirme anketi, olgunluk skoru, aksiyon takibi. Kokpit önerilerine bağlanır.</td></tr>
+      <tr><td class="mono">LeanMonitoringTool_GM</td><td>Dosya şifreli, açılamadı</td><td>Şifre paylaşılırsa incelenecek.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Yol haritası</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Dönem</th><th>Teslim</th><th>Başarı ölçütü</th></tr></thead>
+    <tbody>
+      <tr><td class="num">0–3 ay</td><td><b>MVP:</b> D1 + D2 web (mevcut Depo Senaryo Stüdyosu'nun üstüne), Excel personel/forecast yükleme, yasal uyarılar, öneri merdiveni. T1'in karayolu FTL + parsiyel sürümü. Kazan deposu ilk pilot.</td><td>3 pilot şirket, haftalık aktif kullanım, Kazan referans testleri yeşil</td></tr>
+      <tr><td class="num">3–6 ay</td><td>T1 ay kilidi ve takip defteri, ekspres kargo ve havayolu tarifeleri, T2 teklif kıyaslama, abonelik ve ödeme altyapısı</td><td>İlk 10 ücretli müşteri; ilk faturada bulunan tasarruf ≥ yıllık abonelik</td></tr>
+      <tr><td class="num">6–12 ay</td><td>D3 layout ve ürün master simülasyonu, kesikli olay simülasyonu, ilk 2 WMS bağlayıcısı, AI brifing beta</td><td>Kokpit'te 3 Enterprise müşteri, aylık kayıp oranı &lt; %3</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Karar önerisi</h2>
+  <div class="dec">
+    <div class="card"><b>Karar</b><span>MVP'yi iki kancayla başlat: <b>Depo İş Gücü (D1+D2)</b> ve <b>Navlun Fatura Denetimi (T1)</b>. Layout simülasyonu ve AI Kokpit sonra gelir.</span></div>
+    <div class="card"><b>Gerekçe</b><span>İkisi de veriyi Excel'den alabilir, entegrasyon beklemez. D1 için motor ve testler zaten var. T1 parasını ilk ayda kendisi gösterir (bulunan fark faturası), bu da satışı kolaylaştırır.</span></div>
+    <div class="card"><b>Risk</b><span>Sözleşme ve fatura formatlarının çeşitliliği (AI çıkarım hatası → insan doğrulama adımı şart). Yasal kuralların yanlış uygulanması (hukuk teyidi). Kazan kodunun sahipliği (sözleşme kontrolü, yol haritasında açık). Büyük WMS sağlayıcılarının benzer modül eklemesi.</span></div>
+    <div class="card"><b>Sonraki adım</b><span>1) 5 hedef müşteriyle 30 dakikalık problem görüşmesi (fiyat hipotezi dahil). 2) Bir gerçek nakliye sözleşmesi + 1 aylık fatura ile T1 prototipi. 3) Scheduling Tool mantığını D1'e ekle: sürücü dönüşümü, forecast doğruluğu, saat dilimi panosu. 4) Marka adı ve alan adı kontrolü.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Kaynaklar</h2>
+  <ul class="src">
+    <li><a href="https://marketplace.microsoft.com/en-sg/product/WA200011243">Microsoft Marketplace · Blue Yonder Warehouse Ops ajanı</a></li>
+    <li><a href="https://blueyonder.com/solutions/workforce-and-labor-management/warehouse-labor">Blue Yonder · Warehouse Labor</a></li>
+    <li><a href="https://www.easymetrics.com/solution/">Easy Metrics · Solution</a></li>
+    <li><a href="https://www.sap.com/hk/products/scm/partners/longbow-advantage-inc-rebus-by-longbow-advantage.html">SAP Partner · Rebus by Longbow</a></li>
+    <li><a href="https://www.optioryx.com/pulse-pricing">Optioryx · Pulse pricing</a></li>
+    <li><a href="https://www.createasoft.com/warehouse-simulation">CreateASoft · Warehouse simulation</a></li>
+    <li><a href="https://loop.com/plp/freight-audit-and-pay-software">Loop · Freight audit and pay</a></li>
+    <li><a href="https://transportationinfo.trimble.com/eu/tp-product-brochure/freight-audit">Trimble · Freight audit</a></li>
+    <li><a href="https://www.capterra.ca/software/1110437/freightverify">Capterra · FreightVerify</a></li>
+    <li><a href="https://www.transporeon.com/en/community/blog/introducing-freight-audit-pay-what-was-agreed-upon">Transporeon · Freight Audit</a></li>
+    <li><a href="https://www.loop.com/industry-insights/freight-audit-software-how-to-evaluate-providers">Loop · Freight audit değerlendirme rehberi</a></li>
+    <li><a href="https://www.goodship.io/blog/what-is-the-best-rfp-software-for-freight">Goodship · Freight RFP software</a></li>
+    <li><a href="https://shipwell.com/rfp-automation/">Shipwell · RFP automation</a></li>
+    <li><a href="https://mdpgroup.com/cozumler/jetlm-lojistik-yonetimi/">MDP Group · JetLM</a></li>
+    <li><a href="https://www.paradergi.com.tr/sektorler/2022/10/12/turk-firmalar-orta-lojistik-koridorunu-yapay-zeka-ile-geciyor-2">Para Dergi · Optiyol, PIXSelect</a></li>
+    <li><a href="https://www.ekonomist.com.tr/makale/lojistikte-dijital-devrim-basladi-17-girisimin-buyume-hedefleri-77096">Ekonomist · 17 lojistik girişimi</a></li>
+    <li><a href="https://www.cargoson.com/tr/blog/cargoson-u-kim-kullanmali">Cargoson</a></li>
+    <li><a href="https://developer.nvidia.com/blog/?p=111579">NVIDIA · Multi-agent warehouse blueprint</a></li>
+    <li><a href="https://www.mhlnews.com/technology-automation/article/55366615/using-agentic-ai-to-navigate-complexity-in-warehouse-operations">MHL News · Agentic AI in warehouse operations</a></li>
+  </ul>
+</section>
+
+</div>
+<div class="tape" aria-hidden="true"></div>
